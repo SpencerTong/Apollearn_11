@@ -1,0 +1,9 @@
+{
+  "subject": "networking",
+  "title": "Networking",
+  "bossNodeId": "http",
+  "nodes": [
+    { "id": "packets", "position": { "x": 0, "y": 0 }, "prerequisites": [] },
+    { "id": "http", "position": { "x": 0, "y": 120 }, "prerequisites": ["packets"] }
+  ]
+}
