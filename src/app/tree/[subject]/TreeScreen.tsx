@@ -31,7 +31,6 @@ export function TreeScreen({ tree, todayISO }: { tree: LoadedTree; todayISO: str
     store.recordCompletion(tree.subject, selected.id, { score: result.score, xp: result.xp, passed: result.passed, todayISO });
     setProgress(store.getSubject(tree.subject));
     setRunning(false);
-    setSelectedId(null);
   }
 
   const RunComponent = selected ? getNodeType(selected.meta.type).Component : null;

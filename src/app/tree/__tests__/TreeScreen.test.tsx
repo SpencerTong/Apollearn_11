@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TreeScreen } from '../[subject]/TreeScreen';
 import type { LoadedTree } from '@/domain/content/types';
@@ -23,7 +23,11 @@ describe('TreeScreen', () => {
     // answer + submit in the modal
     await userEvent.click(screen.getByRole('button', { name: /^x$/i }));
     await userEvent.click(screen.getByRole('button', { name: /submit/i }));
-    // XP reflected in the header
-    expect(await screen.findByText(/100 XP/i)).toBeInTheDocument();
+    // XP reflected in the header (scoped to avoid matching the open detail panel)
+    const header = screen.getByRole('banner');
+    expect(await within(header).findByText(/100 XP/i)).toBeInTheDocument();
+    // B is now unlocked — click B and verify its Start button is enabled
+    await userEvent.click(screen.getByRole('button', { name: 'B' }));
+    expect(screen.getByRole('button', { name: /start|review/i })).toBeEnabled();
   });
 });
