@@ -1,0 +1,8 @@
+{
+  "subject": "malformed",
+  "title": "Malformed",
+  "bossNodeId": "bad-node",
+  "nodes": [
+    { "id": "bad-node", "position": { "x": 0, "y": 0 }, "prerequisites": [] }
+  ]
+}

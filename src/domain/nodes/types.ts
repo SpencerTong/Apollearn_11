@@ -3,7 +3,6 @@ import type { NodeMeta, NodeTypeId } from '@/domain/content/types';
 
 export interface NodeRuntimeState {
   answers: Record<string, number>;
-  submitted: boolean;
 }
 
 export interface NodeViewProps {

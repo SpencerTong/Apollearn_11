@@ -24,4 +24,8 @@ describe('loadTree', () => {
     expect(tree.bossNodeId).toBe('http');
     expect(tree.nodes.find((n) => n.id === 'http')!.meta.isBoss).toBe(true);
   });
+
+  it('throws on malformed frontmatter (missing xp, answerIndex as string)', () => {
+    expect(() => loadTree(root, 'malformed')).toThrowError('Invalid node frontmatter');
+  });
 });

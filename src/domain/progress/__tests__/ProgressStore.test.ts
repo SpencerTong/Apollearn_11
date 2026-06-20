@@ -57,4 +57,28 @@ describe('ProgressStore', () => {
     new ProgressStore(shared).recordCompletion('networking', 'packets', { score: 1, xp: 100, passed: true, todayISO: '2026-06-19' });
     expect(new ProgressStore(shared).getSubject('networking').nodes.packets.status).toBe('mastered');
   });
+
+  it('normalizes a corrupt blob: invalid status → not-started, missing xpEarned → 0, missing streak → 0', () => {
+    const storage = memStorage();
+    storage.setItem(
+      'apollearn11:progress:v1',
+      JSON.stringify({ subjects: { net: { nodes: { a: { status: 'weird' } } } }, streak: {} }),
+    );
+    const s = new ProgressStore(storage);
+    const node = s.getSubject('net').nodes.a;
+    expect(node.status).toBe('not-started');
+    expect(node.xpEarned).toBe(0);
+    expect(typeof node.xpEarned).toBe('number');
+    expect(s.getStreak().count).toBe(0);
+  });
+
+  it('ignores clock rollback (todayISO earlier than lastActiveISO)', () => {
+    store.recordCompletion('networking', 'a', { score: 1, xp: 10, passed: true, todayISO: '2026-06-19' });
+    expect(store.getStreak().count).toBe(1);
+    expect(store.getStreak().lastActiveISO).toBe('2026-06-19');
+    // Rollback date — should be ignored
+    store.recordCompletion('networking', 'b', { score: 1, xp: 10, passed: true, todayISO: '2026-06-17' });
+    expect(store.getStreak().count).toBe(1);
+    expect(store.getStreak().lastActiveISO).toBe('2026-06-19');
+  });
 });

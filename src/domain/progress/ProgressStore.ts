@@ -1,4 +1,4 @@
-import type { ProgressData, SubjectProgress } from './types';
+import type { ProgressData, SubjectProgress, NodeStatus } from './types';
 
 export interface KeyValue {
   getItem(k: string): string | null;
@@ -6,6 +6,7 @@ export interface KeyValue {
 }
 
 const KEY = 'apollearn11:progress:v1';
+const VALID_STATUSES: NodeStatus[] = ['not-started', 'in-progress', 'mastered'];
 
 function empty(): ProgressData {
   return { subjects: {}, streak: { count: 0, lastActiveISO: null } };
@@ -17,6 +18,58 @@ function dayDiff(aISO: string, bISO: string): number {
   return Math.round((b - a) / 86_400_000);
 }
 
+function normalizeNumber(val: unknown, fallback: number): number {
+  const n = Number(val);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+function normalizeProgressData(raw: unknown): ProgressData {
+  const out = empty();
+  if (typeof raw !== 'object' || raw === null) return out;
+  const obj = raw as Record<string, unknown>;
+
+  // Normalize subjects
+  const subjects = obj.subjects;
+  if (typeof subjects === 'object' && subjects !== null) {
+    for (const [subjectKey, subjectVal] of Object.entries(subjects as Record<string, unknown>)) {
+      const subjectObj = (typeof subjectVal === 'object' && subjectVal !== null)
+        ? (subjectVal as Record<string, unknown>)
+        : {};
+      const nodes = subjectObj.nodes;
+      const normalizedNodes: SubjectProgress['nodes'] = {};
+
+      if (typeof nodes === 'object' && nodes !== null) {
+        for (const [nodeId, nodeVal] of Object.entries(nodes as Record<string, unknown>)) {
+          const nodeObj = (typeof nodeVal === 'object' && nodeVal !== null)
+            ? (nodeVal as Record<string, unknown>)
+            : {};
+          const status: NodeStatus = VALID_STATUSES.includes(nodeObj.status as NodeStatus)
+            ? (nodeObj.status as NodeStatus)
+            : 'not-started';
+          normalizedNodes[nodeId] = {
+            status,
+            xpEarned: normalizeNumber(nodeObj.xpEarned, 0),
+            bestScore: normalizeNumber(nodeObj.bestScore, 0),
+          };
+        }
+      }
+      out.subjects[subjectKey] = { nodes: normalizedNodes };
+    }
+  }
+
+  // Normalize streak
+  const streak = obj.streak;
+  if (typeof streak === 'object' && streak !== null) {
+    const s = streak as Record<string, unknown>;
+    out.streak = {
+      count: normalizeNumber(s.count, 0),
+      lastActiveISO: typeof s.lastActiveISO === 'string' ? s.lastActiveISO : null,
+    };
+  }
+
+  return out;
+}
+
 export class ProgressStore {
   constructor(private storage: KeyValue) {}
 
@@ -24,7 +77,7 @@ export class ProgressStore {
     const raw = this.storage.getItem(KEY);
     if (!raw) return empty();
     try {
-      return { ...empty(), ...(JSON.parse(raw) as ProgressData) };
+      return normalizeProgressData(JSON.parse(raw));
     } catch {
       return empty();
     }
@@ -65,11 +118,14 @@ export class ProgressStore {
       data.streak = { count: 1, lastActiveISO: opts.todayISO };
     } else {
       const diff = dayDiff(last, opts.todayISO);
-      if (diff === 0) {
+      if (diff < 0) {
+        // clock rollback or out-of-order date — ignore, do not touch count or lastActiveISO
+      } else if (diff === 0) {
         // same day, no change to count
       } else if (diff === 1) {
         data.streak = { count: data.streak.count + 1, lastActiveISO: opts.todayISO };
       } else {
+        // gap > 1 day: reset streak to 1
         data.streak = { count: 1, lastActiveISO: opts.todayISO };
       }
     }
