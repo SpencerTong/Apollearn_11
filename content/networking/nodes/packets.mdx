@@ -1,0 +1,17 @@
+---
+id: packets
+title: Packets
+type: lesson-quiz
+xp: 100
+estMinutes: 5
+questions:
+  - id: q1
+    prompt: What is a network packet?
+    choices: ["A small unit of data with headers + payload", "A physical cable", "A type of router"]
+    answerIndex: 0
+  - id: q2
+    prompt: Why is data split into packets?
+    choices: ["For efficient, resilient routing", "To make it heavier", "To encrypt it by default"]
+    answerIndex: 0
+---
+Data sent over a network is broken into **packets** — small chunks, each wrapped with header information (where it's from, where it's going) around a payload. Splitting data this way lets the network route pieces independently and recover from loss.

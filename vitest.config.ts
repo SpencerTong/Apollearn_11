@@ -8,8 +8,13 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./vitest.setup.ts'],
+    css: false,
   },
   resolve: {
-    alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
+    alias: [
+      { find: '@', replacement: fileURLToPath(new URL('./src', import.meta.url)) },
+      { find: /^@xyflow\/react\/.*\.css$/, replacement: fileURLToPath(new URL('./src/__mocks__/empty.css', import.meta.url)) },
+      { find: '@xyflow/react', replacement: fileURLToPath(new URL('./src/__mocks__/xyflow-react.tsx', import.meta.url)) },
+    ],
   },
 });
