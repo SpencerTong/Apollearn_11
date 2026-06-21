@@ -1,4 +1,5 @@
 'use client';
+import { useReducedMotion } from 'motion/react';
 import type { LoadedTree } from '@/domain/content/types';
 import type { NodeUiState } from '@/domain/tree/treeState';
 import { computeBounds, nodePercent, edgePathD, edgeVisual, EDGE_COLORS, NODE_COLORS } from './constellationGeometry';
@@ -14,6 +15,7 @@ export function Constellation({
   selectedId: string | null;
   onSelect: (id: string) => void;
 }) {
+  const prefersReduced = useReducedMotion();
   const bounds = computeBounds(tree);
   const byId = new Map(tree.nodes.map((n) => [n.id, n]));
   const stateOf = (id: string): NodeUiState => states[id] ?? 'locked';
@@ -57,6 +59,19 @@ export function Constellation({
           if (!node || node.prerequisites.length === 0) return null;
           const from = byId.get(node.prerequisites[0]);
           if (!from) return null;
+          if (prefersReduced) {
+            return (
+              <circle
+                key={`travel-${selectedId}`}
+                data-testid="travel-token"
+                r={6}
+                cx={node.position.x}
+                cy={node.position.y}
+                fill="url(#travelGlow)"
+                filter="url(#travelBlur)"
+              />
+            );
+          }
           const d = edgePathD(from.position, node.position);
           return (
             <circle
