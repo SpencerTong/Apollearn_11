@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
+import Link from 'next/link';
 import type { LoadedTree } from '@/domain/content/types';
 import { ProgressStore } from '@/domain/progress/ProgressStore';
 import { computeNodeStates, computeSubjectXp, computeLevel } from '@/domain/tree/treeState';
@@ -59,7 +60,10 @@ export function TreeScreen({ tree, todayISO }: { tree: LoadedTree; todayISO: str
   return (
     <div className="flex h-screen flex-col bg-[#080a18] text-slate-100">
       <header className="flex items-center justify-between border-b border-slate-800 px-5 py-3 text-sm">
-        <span className="font-semibold">{tree.title}</span>
+        <div className="flex items-center gap-3">
+          <Link href="/" className="text-slate-400 hover:text-slate-100">← World</Link>
+          <span className="font-semibold">{tree.title}</span>
+        </div>
         <span className="text-amber-400">{level.title} · Lv {level.level} · {xp} XP</span>
       </header>
       <div className="flex flex-1 overflow-hidden">
