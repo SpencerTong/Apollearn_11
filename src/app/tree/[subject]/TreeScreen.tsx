@@ -1,5 +1,6 @@
 'use client';
 import { useMemo, useState } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
 import type { LoadedTree } from '@/domain/content/types';
 import { ProgressStore } from '@/domain/progress/ProgressStore';
 import { computeNodeStates, computeSubjectXp, computeLevel } from '@/domain/tree/treeState';
@@ -58,14 +59,23 @@ export function TreeScreen({ tree, todayISO }: { tree: LoadedTree; todayISO: str
         <NodeDetailPanel node={selected} state={selected ? states[selected.id] : undefined} onStart={start} />
       </div>
 
-      {running && selected && RunComponent && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-6">
-          <div className="max-h-[85vh] w-full max-w-xl overflow-auto rounded-2xl border border-slate-700 bg-slate-900 p-6">
-            <h2 className="mb-4 text-xl font-bold">{selected.meta.title}</h2>
-            <RunComponent node={selected.meta} onComplete={complete} isReview={states[selected.id] === 'mastered'} />
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {running && selected && RunComponent && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-6"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="max-h-[85vh] w-full max-w-xl overflow-auto rounded-2xl border border-slate-700 bg-slate-900 p-6"
+              initial={{ scale: 0.96, y: 8 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.96, y: 8 }}
+              transition={{ duration: 0.18 }}
+            >
+              <h2 className="mb-4 text-xl font-bold">{selected.meta.title}</h2>
+              <RunComponent node={selected.meta} onComplete={complete} isReview={states[selected.id] === 'mastered'} />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

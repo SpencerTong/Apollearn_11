@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { motion } from 'motion/react';
 import type { NodeViewProps } from '@/domain/nodes/types';
 import { scoreQuiz, lessonQuizXp } from './logic';
 import { Markdown } from '@/components/Markdown';
@@ -48,13 +49,15 @@ export function LessonQuizNode({ node, onComplete, isReview }: NodeViewProps) {
         <fieldset key={q.id} className="space-y-2">
           <legend className="font-medium text-slate-100">{q.prompt}</legend>
           {q.choices.map((choice, i) => (
-            <button
+            <motion.button
               key={i}
               type="button"
               aria-pressed={answers[q.id] === i}
               disabled={submitted}
               data-correct={submitted ? String(i === q.answerIndex) : undefined}
               onClick={() => setAnswers((a) => ({ ...a, [q.id]: i }))}
+              whileHover={!submitted ? { scale: 1.01 } : undefined}
+              whileTap={!submitted ? { scale: 0.99 } : undefined}
               className={`block w-full rounded-lg border px-4 py-2 text-left ${
                 submitted
                   ? i === q.answerIndex
@@ -68,7 +71,7 @@ export function LessonQuizNode({ node, onComplete, isReview }: NodeViewProps) {
               }`}
             >
               {choice}
-            </button>
+            </motion.button>
           ))}
         </fieldset>
       ))}
