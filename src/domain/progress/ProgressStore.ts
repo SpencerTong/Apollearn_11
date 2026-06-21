@@ -9,7 +9,7 @@ const KEY = 'apollearn11:progress:v1';
 const VALID_STATUSES: NodeStatus[] = ['not-started', 'in-progress', 'mastered'];
 
 function empty(): ProgressData {
-  return { subjects: {}, streak: { count: 0, lastActiveISO: null } };
+  return { subjects: {}, streak: { count: 0, lastActiveISO: null }, seenIntro: false };
 }
 
 function dayDiff(aISO: string, bISO: string): number {
@@ -66,6 +66,9 @@ function normalizeProgressData(raw: unknown): ProgressData {
       lastActiveISO: typeof s.lastActiveISO === 'string' ? s.lastActiveISO : null,
     };
   }
+
+  // Normalize seenIntro
+  out.seenIntro = obj.seenIntro === true;
 
   return out;
 }
@@ -130,6 +133,16 @@ export class ProgressStore {
       }
     }
 
+    this.save(data);
+  }
+
+  hasSeenIntro(): boolean {
+    return this.load().seenIntro === true;
+  }
+
+  markIntroSeen(): void {
+    const data = this.load();
+    data.seenIntro = true;
     this.save(data);
   }
 }

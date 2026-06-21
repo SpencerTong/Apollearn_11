@@ -13,4 +13,5 @@ export interface SubjectProgress {
 export interface ProgressData {
   subjects: Record<string, SubjectProgress>;
   streak: { count: number; lastActiveISO: string | null };
+  seenIntro: boolean;
 }

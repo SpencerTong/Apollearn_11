@@ -81,4 +81,20 @@ describe('ProgressStore', () => {
     expect(store.getStreak().count).toBe(1);
     expect(store.getStreak().lastActiveISO).toBe('2026-06-19');
   });
+
+  it('intro is unseen by default and persists once marked', () => {
+    const shared = memStorage();
+    const a = new ProgressStore(shared);
+    expect(a.hasSeenIntro()).toBe(false);
+    a.markIntroSeen();
+    expect(a.hasSeenIntro()).toBe(true);
+    // persists across instances
+    expect(new ProgressStore(shared).hasSeenIntro()).toBe(true);
+  });
+
+  it('coerces a corrupt seenIntro to false on load', () => {
+    const shared = memStorage();
+    shared.setItem('apollearn11:progress:v1', JSON.stringify({ subjects: {}, streak: { count: 0, lastActiveISO: null }, seenIntro: 'yes' }));
+    expect(new ProgressStore(shared).hasSeenIntro()).toBe(false);
+  });
 });
