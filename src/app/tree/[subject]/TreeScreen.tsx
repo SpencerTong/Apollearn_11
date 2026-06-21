@@ -3,14 +3,16 @@ import { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import Link from 'next/link';
 import type { LoadedTree } from '@/domain/content/types';
-import { computeNodeStates, computeSubjectXp, computeLevel } from '@/domain/tree/treeState';
+import { computeNodeStates, computeGlobalXp, computeLevel } from '@/domain/tree/treeState';
+import { computeBadges } from '@/domain/progress/badges';
 import { getNodeType } from '@/domain/nodes/registry';
 import { Constellation } from '@/components/Constellation';
 import { NodeDetailPanel } from '@/components/NodeDetailPanel';
 import { WelcomeIntro } from '@/components/WelcomeIntro';
+import { Hud } from '@/components/Hud';
 import { browserStore } from '@/lib/browserStore';
 
-export function TreeScreen({ tree, todayISO }: { tree: LoadedTree; todayISO: string }) {
+export function TreeScreen({ tree, todayISO, nodeCountBySubject }: { tree: LoadedTree; todayISO: string; nodeCountBySubject: Record<string, number> }) {
   const store = useMemo(browserStore, []);
   const [progress, setProgress] = useState(() => store.getSubject(tree.subject));
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -23,8 +25,8 @@ export function TreeScreen({ tree, todayISO }: { tree: LoadedTree; todayISO: str
   }
 
   const states = useMemo(() => computeNodeStates(tree, progress), [tree, progress]);
-  const xp = computeSubjectXp(progress);
-  const level = computeLevel(xp);
+  const globalData = store.load();
+  const globalXp = computeGlobalXp(globalData);
   const selected = tree.nodes.find((n) => n.id === selectedId) ?? null;
 
   function start() {
@@ -60,7 +62,12 @@ export function TreeScreen({ tree, todayISO }: { tree: LoadedTree; todayISO: str
           <Link href="/" className="text-slate-400 hover:text-slate-100">← World</Link>
           <span className="font-semibold">{tree.title}</span>
         </div>
-        <span className="text-amber-400">{level.title} · Lv {level.level} · {xp} XP</span>
+        <Hud
+          level={computeLevel(globalXp)}
+          xp={globalXp}
+          streak={globalData.streak.count}
+          badges={computeBadges(globalData, nodeCountBySubject)}
+        />
       </header>
       <div className="flex flex-1 overflow-hidden">
         <div className="relative flex-1">

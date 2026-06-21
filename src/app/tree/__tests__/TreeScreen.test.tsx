@@ -16,7 +16,7 @@ beforeEach(() => localStorage.clear());
 
 describe('TreeScreen', () => {
   it('completing node A awards XP and unlocks B', async () => {
-    render(<TreeScreen tree={tree} todayISO="2026-06-19" />);
+    render(<TreeScreen tree={tree} todayISO="2026-06-19" nodeCountBySubject={{ networking: 2 }} />);
     // dismiss the welcome intro overlay (shown on first render because localStorage is cleared)
     await userEvent.click(screen.getByRole('button', { name: /start learning/i }));
     // open A via the Constellation node button
@@ -37,7 +37,7 @@ describe('TreeScreen', () => {
   });
 
   it('modal resets to Learn phase on re-open after completion', async () => {
-    render(<TreeScreen tree={tree} todayISO="2026-06-19" />);
+    render(<TreeScreen tree={tree} todayISO="2026-06-19" nodeCountBySubject={{ networking: 2 }} />);
     // dismiss intro
     await userEvent.click(screen.getByRole('button', { name: /start learning/i }));
     // open A and complete it

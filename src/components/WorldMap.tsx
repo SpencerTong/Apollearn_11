@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 import Link from 'next/link';
 import type { Subject } from '@/domain/content/subjects';
 
@@ -39,7 +40,7 @@ function Galaxy({ subject, mastered }: { subject: Subject; mastered: number }) {
   );
 }
 
-export function WorldMap({ subjects, masteredBySubject }: { subjects: Subject[]; masteredBySubject: Record<string, number> }) {
+export function WorldMap({ subjects, masteredBySubject, hud }: { subjects: Subject[]; masteredBySubject: Record<string, number>; hud?: React.ReactNode }) {
   return (
     <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(ellipse_at_50%_50%,#0d1030,#05060f_75%)] text-slate-100">
       {/* starfield */}
@@ -64,9 +65,12 @@ export function WorldMap({ subjects, masteredBySubject }: { subjects: Subject[];
         <path d="M 36 52 C 28 64, 24 72, 20 80" stroke="url(#aurora)" strokeWidth="2" fill="none" style={{ filter: 'blur(1px)' }} />
       </svg>
 
-      <header className="relative px-6 py-5">
-        <h1 className="text-xl font-bold">Apollearn 11</h1>
-        <p className="text-xs text-slate-400">Your learning universe</p>
+      <header className="relative flex items-center justify-between px-6 py-5">
+        <div>
+          <h1 className="text-xl font-bold">Apollearn 11</h1>
+          <p className="text-xs text-slate-400">Your learning universe</p>
+        </div>
+        {hud}
       </header>
 
       {subjects.map((s, i) => (
