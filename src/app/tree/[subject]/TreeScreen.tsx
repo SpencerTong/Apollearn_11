@@ -7,6 +7,7 @@ import { computeNodeStates, computeSubjectXp, computeLevel } from '@/domain/tree
 import { getNodeType } from '@/domain/nodes/registry';
 import { SkillTree } from '@/components/SkillTree';
 import { NodeDetailPanel } from '@/components/NodeDetailPanel';
+import { WelcomeIntro } from '@/components/WelcomeIntro';
 
 function browserStore(): ProgressStore {
   return new ProgressStore(typeof window !== 'undefined' ? window.localStorage : { getItem: () => null, setItem: () => {} });
@@ -17,6 +18,12 @@ export function TreeScreen({ tree, todayISO }: { tree: LoadedTree; todayISO: str
   const [progress, setProgress] = useState(() => store.getSubject(tree.subject));
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [running, setRunning] = useState(false);
+  const [showIntro, setShowIntro] = useState(() => !store.hasSeenIntro());
+
+  function dismissIntro() {
+    store.markIntroSeen();
+    setShowIntro(false);
+  }
 
   const states = useMemo(() => computeNodeStates(tree, progress), [tree, progress]);
   const xp = computeSubjectXp(progress);
@@ -58,6 +65,8 @@ export function TreeScreen({ tree, todayISO }: { tree: LoadedTree; todayISO: str
         </div>
         <NodeDetailPanel node={selected} state={selected ? states[selected.id] : undefined} onStart={start} />
       </div>
+
+      {showIntro && <WelcomeIntro onDismiss={dismissIntro} />}
 
       <AnimatePresence>
         {running && selected && RunComponent && (

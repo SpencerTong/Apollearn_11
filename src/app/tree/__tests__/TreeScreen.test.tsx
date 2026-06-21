@@ -17,6 +17,8 @@ beforeEach(() => localStorage.clear());
 describe('TreeScreen', () => {
   it('completing node A awards XP and unlocks B', async () => {
     render(<TreeScreen tree={tree} todayISO="2026-06-19" />);
+    // dismiss the welcome intro overlay (shown on first render because localStorage is cleared)
+    await userEvent.click(screen.getByRole('button', { name: /start learning/i }));
     // open A via the detail panel
     await userEvent.click(screen.getByText('A'));
     await userEvent.click(screen.getByRole('button', { name: /start/i }));
