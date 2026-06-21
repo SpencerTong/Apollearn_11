@@ -5,7 +5,7 @@ import type { LoadedTree } from '@/domain/content/types';
 import { ProgressStore } from '@/domain/progress/ProgressStore';
 import { computeNodeStates, computeSubjectXp, computeLevel } from '@/domain/tree/treeState';
 import { getNodeType } from '@/domain/nodes/registry';
-import { SkillTree } from '@/components/SkillTree';
+import { Constellation } from '@/components/Constellation';
 import { NodeDetailPanel } from '@/components/NodeDetailPanel';
 import { WelcomeIntro } from '@/components/WelcomeIntro';
 
@@ -63,18 +63,8 @@ export function TreeScreen({ tree, todayISO }: { tree: LoadedTree; todayISO: str
         <span className="text-amber-400">{level.title} · Lv {level.level} · {xp} XP</span>
       </header>
       <div className="flex flex-1 overflow-hidden">
-        <div className="flex flex-1 flex-col">
-          <div className="flex-1" aria-hidden="true"><SkillTree tree={tree} states={states} onSelect={setSelectedId} /></div>
-          {/* testable / accessible node list mirroring the canvas */}
-          <ul className="flex gap-2 border-t border-slate-800 p-2 text-xs">
-            {tree.nodes.map((n) => (
-              <li key={n.id}>
-                <button type="button" onClick={() => setSelectedId(n.id)} className="rounded px-2 py-1 hover:bg-slate-800">
-                  {n.meta.title}
-                </button>
-              </li>
-            ))}
-          </ul>
+        <div className="relative flex-1">
+          <Constellation tree={tree} states={states} selectedId={selectedId} onSelect={setSelectedId} />
         </div>
         <NodeDetailPanel node={selected} state={selected ? states[selected.id] : undefined} onStart={start} />
       </div>

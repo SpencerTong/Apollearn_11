@@ -19,8 +19,8 @@ describe('TreeScreen', () => {
     render(<TreeScreen tree={tree} todayISO="2026-06-19" />);
     // dismiss the welcome intro overlay (shown on first render because localStorage is cleared)
     await userEvent.click(screen.getByRole('button', { name: /start learning/i }));
-    // open A via the detail panel
-    await userEvent.click(screen.getByText('A'));
+    // open A via the Constellation node button
+    await userEvent.click(screen.getByRole('button', { name: 'A' }));
     await userEvent.click(screen.getByRole('button', { name: /start/i }));
     // advance through the Learn phase to the Test phase
     await userEvent.click(screen.getByRole('button', { name: /quiz me/i }));
