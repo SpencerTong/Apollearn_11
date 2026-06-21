@@ -1,12 +1,8 @@
 'use client';
 import { useMemo } from 'react';
-import { ProgressStore } from '@/domain/progress/ProgressStore';
 import type { Subject } from '@/domain/content/subjects';
 import { WorldMap } from '@/components/WorldMap';
-
-function browserStore(): ProgressStore {
-  return new ProgressStore(typeof window !== 'undefined' ? window.localStorage : { getItem: () => null, setItem: () => {} });
-}
+import { browserStore } from '@/lib/browserStore';
 
 export function WorldMapScreen({ subjects }: { subjects: Subject[] }) {
   const masteredBySubject = useMemo(() => {

@@ -3,16 +3,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import Link from 'next/link';
 import type { LoadedTree } from '@/domain/content/types';
-import { ProgressStore } from '@/domain/progress/ProgressStore';
 import { computeNodeStates, computeSubjectXp, computeLevel } from '@/domain/tree/treeState';
 import { getNodeType } from '@/domain/nodes/registry';
 import { Constellation } from '@/components/Constellation';
 import { NodeDetailPanel } from '@/components/NodeDetailPanel';
 import { WelcomeIntro } from '@/components/WelcomeIntro';
-
-function browserStore(): ProgressStore {
-  return new ProgressStore(typeof window !== 'undefined' ? window.localStorage : { getItem: () => null, setItem: () => {} });
-}
+import { browserStore } from '@/lib/browserStore';
 
 export function TreeScreen({ tree, todayISO }: { tree: LoadedTree; todayISO: string }) {
   const store = useMemo(browserStore, []);
