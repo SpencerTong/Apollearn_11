@@ -30,4 +30,16 @@ describe('Constellation', () => {
     await userEvent.click(screen.getByRole('button', { name: 'IP' }));
     expect(onSelect).toHaveBeenCalledWith('b');
   });
+
+  it('renders a travel token to a selected node that has a prerequisite', () => {
+    render(<Constellation tree={tree} states={states} selectedId="b" onSelect={() => {}} />);
+    expect(screen.getByTestId('travel-token')).toBeInTheDocument();
+  });
+
+  it('renders no travel token for a root node or when nothing is selected', () => {
+    const { rerender } = render(<Constellation tree={tree} states={states} selectedId="a" onSelect={() => {}} />);
+    expect(screen.queryByTestId('travel-token')).not.toBeInTheDocument();
+    rerender(<Constellation tree={tree} states={states} selectedId={null} onSelect={() => {}} />);
+    expect(screen.queryByTestId('travel-token')).not.toBeInTheDocument();
+  });
 });

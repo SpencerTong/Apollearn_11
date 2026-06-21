@@ -51,6 +51,38 @@ export function Constellation({
             );
           }),
         )}
+        {(() => {
+          if (!selectedId) return null;
+          const node = byId.get(selectedId);
+          if (!node || node.prerequisites.length === 0) return null;
+          const from = byId.get(node.prerequisites[0]);
+          if (!from) return null;
+          const d = edgePathD(from.position, node.position);
+          return (
+            <circle
+              key={`travel-${selectedId}`}
+              data-testid="travel-token"
+              r={6}
+              fill="url(#travelGlow)"
+              filter="url(#travelBlur)"
+            >
+              <animateMotion path={d} dur="0.9s" fill="freeze" />
+            </circle>
+          );
+        })()}
+        <defs>
+          <radialGradient id="travelGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#ffffff" />
+            <stop offset="100%" stopColor="#a5b4fc" />
+          </radialGradient>
+          <filter id="travelBlur" x="-100%" y="-100%" width="300%" height="300%">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
       </svg>
       {/* nodes */}
       {tree.nodes.map((n) => {
