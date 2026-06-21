@@ -8,6 +8,7 @@ export interface NodeRuntimeState {
 export interface NodeViewProps {
   node: NodeMeta;
   onComplete: (result: { score: number; passed: boolean; xp: number }) => void;
+  isReview?: boolean;
 }
 
 export interface NodeTypeDefinition {

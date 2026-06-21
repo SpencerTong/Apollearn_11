@@ -11,17 +11,31 @@ const node: NodeMeta = {
 };
 
 describe('LessonQuizNode', () => {
-  it('shows the explainer and question', () => {
+  it('starts on the Learn phase showing the body, not the questions', () => {
     render(<LessonQuizNode node={node} onComplete={() => {}} />);
     expect(screen.getByText(/unit of data/i)).toBeInTheDocument();
-    expect(screen.getByText(/What is a packet/i)).toBeInTheDocument();
+    expect(screen.queryByText(/What is a packet/i)).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /quiz me/i })).toBeInTheDocument();
   });
 
-  it('calls onComplete with passing result when answered correctly', async () => {
+  it('advances to the Test phase and completes with a passing result', async () => {
     const onComplete = vi.fn();
     render(<LessonQuizNode node={node} onComplete={onComplete} />);
+    await userEvent.click(screen.getByRole('button', { name: /quiz me/i }));
+    expect(screen.getByText(/What is a packet/i)).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: /Data unit/i }));
     await userEvent.click(screen.getByRole('button', { name: /submit/i }));
     expect(onComplete).toHaveBeenCalledWith({ score: 1, passed: true, xp: 100 });
+  });
+
+  it('offers Skip to quiz when reviewing a mastered node', async () => {
+    render(<LessonQuizNode node={node} onComplete={() => {}} isReview />);
+    await userEvent.click(screen.getByRole('button', { name: /skip to quiz/i }));
+    expect(screen.getByText(/What is a packet/i)).toBeInTheDocument();
+  });
+
+  it('does NOT offer Skip to quiz for a non-review node', () => {
+    render(<LessonQuizNode node={node} onComplete={() => {}} />);
+    expect(screen.queryByRole('button', { name: /skip to quiz/i })).not.toBeInTheDocument();
   });
 });

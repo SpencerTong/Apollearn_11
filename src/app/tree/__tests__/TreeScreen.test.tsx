@@ -20,6 +20,8 @@ describe('TreeScreen', () => {
     // open A via the detail panel
     await userEvent.click(screen.getByText('A'));
     await userEvent.click(screen.getByRole('button', { name: /start/i }));
+    // advance through the Learn phase to the Test phase
+    await userEvent.click(screen.getByRole('button', { name: /quiz me/i }));
     // answer + submit in the modal
     await userEvent.click(screen.getByRole('button', { name: /^x$/i }));
     await userEvent.click(screen.getByRole('button', { name: /submit/i }));

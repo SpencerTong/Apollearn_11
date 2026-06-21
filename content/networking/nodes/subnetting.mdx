@@ -15,4 +15,17 @@ questions:
     choices: ["Which bits are network vs host", "The cable length", "The DNS server"]
     answerIndex: 0
 ---
-**Subnetting** carves one network into smaller pieces. A **subnet mask** (e.g. `/24`) marks which bits of an address identify the network versus the host, letting you size and isolate sub-networks.
+## Splitting a network: subnetting
+
+A single network can be carved into smaller pieces called **subnets**. This keeps
+traffic local, improves security, and uses address space efficiently.
+
+### Subnet masks
+
+A **subnet mask** marks which bits of an address are the *network* part versus the
+*host* part.
+
+- `/24` means the first 24 bits are the network → up to 254 hosts.
+- A smaller host portion = fewer devices but more subnets.
+
+This is the boss of the Networking tree — pass it to master the basics.

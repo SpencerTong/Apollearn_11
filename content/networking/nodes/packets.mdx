@@ -14,4 +14,20 @@ questions:
     choices: ["For efficient, resilient routing", "To make it heavier", "To encrypt it by default"]
     answerIndex: 0
 ---
-Data sent over a network is broken into **packets** — small chunks, each wrapped with header information (where it's from, where it's going) around a payload. Splitting data this way lets the network route pieces independently and recover from loss.
+## What is a packet?
+
+When you send data across a network, it isn't sent as one big blob. It's chopped
+into small units called **packets**.
+
+Each packet carries two things:
+
+- **Header** — control info: where it's from, where it's going, and its order.
+- **Payload** — a slice of the actual data.
+
+### Why split data up?
+
+- **Resilience** — if one packet is lost, only that piece is re-sent.
+- **Efficiency** — packets from many conversations share the same links.
+- **Routing** — each packet can take the best available path independently.
+
+You now know the unit every network is built on. Prove it below.

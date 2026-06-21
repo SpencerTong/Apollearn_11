@@ -62,7 +62,7 @@ export function TreeScreen({ tree, todayISO }: { tree: LoadedTree; todayISO: str
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-6">
           <div className="max-h-[85vh] w-full max-w-xl overflow-auto rounded-2xl border border-slate-700 bg-slate-900 p-6">
             <h2 className="mb-4 text-xl font-bold">{selected.meta.title}</h2>
-            <RunComponent node={selected.meta} onComplete={complete} />
+            <RunComponent node={selected.meta} onComplete={complete} isReview={states[selected.id] === 'mastered'} />
           </div>
         </div>
       )}
