@@ -1,0 +1,4 @@
+[
+  { "id": "networking", "title": "Networking", "icon": "🌐", "status": "available", "nodeCount": 3, "blurb": "x" },
+  { "id": "finance", "title": "Finance & Markets", "icon": "📈", "status": "backlog", "nodeCount": 0, "blurb": "y" }
+]

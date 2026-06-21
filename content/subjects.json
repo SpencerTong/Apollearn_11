@@ -1,0 +1,6 @@
+[
+  { "id": "networking", "title": "Networking", "icon": "🌐", "status": "available", "nodeCount": 3, "blurb": "Packets to subnetting — how the internet moves data." },
+  { "id": "finance", "title": "Finance & Markets", "icon": "📈", "status": "backlog", "nodeCount": 0, "blurb": "Stocks, risk, and how markets price things." },
+  { "id": "cloud", "title": "Cloud / AWS", "icon": "☁️", "status": "backlog", "nodeCount": 0, "blurb": "Compute, storage, and deploying in the cloud." },
+  { "id": "linear-optimization", "title": "Linear Optimization", "icon": "📐", "status": "backlog", "nodeCount": 0, "blurb": "Maximize and minimize under constraints." }
+]
