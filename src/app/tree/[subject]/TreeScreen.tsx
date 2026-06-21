@@ -1,5 +1,5 @@
 'use client';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import type { LoadedTree } from '@/domain/content/types';
 import { ProgressStore } from '@/domain/progress/ProgressStore';
@@ -34,12 +34,25 @@ export function TreeScreen({ tree, todayISO }: { tree: LoadedTree; todayISO: str
     if (selected) setRunning(true);
   }
 
+  function closeModal() {
+    setRunning(false);
+  }
+
   function complete(result: { score: number; passed: boolean; xp: number }) {
     if (!selected) return;
     store.recordCompletion(tree.subject, selected.id, { score: result.score, xp: result.xp, passed: result.passed, todayISO });
     setProgress(store.getSubject(tree.subject));
     setRunning(false);
   }
+
+  useEffect(() => {
+    if (!running) return;
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') closeModal();
+    }
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [running]);
 
   const RunComponent = selected ? getNodeType(selected.meta.type).Component : null;
 
@@ -73,13 +86,25 @@ export function TreeScreen({ tree, todayISO }: { tree: LoadedTree; todayISO: str
           <motion.div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-6"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            onClick={(e) => { if (e.target === e.currentTarget) closeModal(); }}
           >
             <motion.div
-              className="max-h-[85vh] w-full max-w-xl overflow-auto rounded-2xl border border-slate-700 bg-slate-900 p-6"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="quiz-modal-title"
+              className="relative max-h-[85vh] w-full max-w-xl overflow-auto rounded-2xl border border-slate-700 bg-slate-900 p-6"
               initial={{ scale: 0.96, y: 8 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.96, y: 8 }}
               transition={{ duration: 0.18 }}
             >
-              <h2 className="mb-4 text-xl font-bold">{selected.meta.title}</h2>
+              <button
+                type="button"
+                aria-label="Close"
+                onClick={closeModal}
+                className="absolute right-4 top-4 text-slate-400 hover:text-slate-100"
+              >
+                ✕
+              </button>
+              <h2 id="quiz-modal-title" className="mb-4 text-xl font-bold">{selected.meta.title}</h2>
               <RunComponent node={selected.meta} onComplete={complete} isReview={states[selected.id] === 'mastered'} />
             </motion.div>
           </motion.div>

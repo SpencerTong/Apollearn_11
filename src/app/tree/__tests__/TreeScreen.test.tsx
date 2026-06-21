@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, within, waitForElementToBeRemoved } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TreeScreen } from '../[subject]/TreeScreen';
 import type { LoadedTree } from '@/domain/content/types';
@@ -34,5 +34,29 @@ describe('TreeScreen', () => {
     // B is now unlocked — click B and verify its Start button is enabled
     await userEvent.click(screen.getByRole('button', { name: 'B' }));
     expect(screen.getByRole('button', { name: /start|review/i })).toBeEnabled();
+  });
+
+  it('modal resets to Learn phase on re-open after completion', async () => {
+    render(<TreeScreen tree={tree} todayISO="2026-06-19" />);
+    // dismiss intro
+    await userEvent.click(screen.getByRole('button', { name: /start learning/i }));
+    // open A and complete it
+    await userEvent.click(screen.getByRole('button', { name: 'A' }));
+    await userEvent.click(screen.getByRole('button', { name: /start/i }));
+    await userEvent.click(screen.getByRole('button', { name: /quiz me/i }));
+    await userEvent.click(screen.getByRole('button', { name: /^x$/i }));
+    await userEvent.click(screen.getByRole('button', { name: /submit/i }));
+    await userEvent.click(screen.getByRole('button', { name: /continue/i }));
+    // wait for modal to close
+    await waitForElementToBeRemoved(() => screen.queryByRole('dialog'));
+    // re-open node A (now mastered) via the node list button
+    await userEvent.click(screen.getByRole('button', { name: 'A' }));
+    await userEvent.click(screen.getByRole('button', { name: /start|review/i }));
+    // should be back on the Learn phase: at least one of the learn-phase controls is visible
+    // (mastered review shows both "Got it — quiz me ▸" and "Skip to quiz")
+    const learnPhaseButtons = screen.getAllByRole('button', { name: /quiz me|skip to quiz/i });
+    expect(learnPhaseButtons.length).toBeGreaterThan(0);
+    // question prompt should NOT yet be shown
+    expect(screen.queryByText(/pick x/i)).not.toBeInTheDocument();
   });
 });

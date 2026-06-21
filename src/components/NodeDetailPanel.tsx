@@ -13,7 +13,7 @@ export function NodeDetailPanel({
   onStart: () => void;
 }) {
   if (!node) return null;
-  const canStart = state === 'available' || state === 'in-progress';
+  const canStart = state === 'available' || state === 'in-progress' || state === 'mastered';
   return (
     <motion.aside
       initial={{ opacity: 0, x: 24 }}
