@@ -1,5 +1,5 @@
 import type { LoadedTree } from '@/domain/content/types';
-import type { SubjectProgress, NodeStatus } from '@/domain/progress/types';
+import type { SubjectProgress, NodeStatus, ProgressData } from '@/domain/progress/types';
 
 export type NodeUiState = 'locked' | 'available' | 'in-progress' | 'mastered';
 
@@ -32,4 +32,11 @@ export function computeLevel(xp: number): { level: number; title: string; xpInto
   const level = Math.floor(xp / XP_PER_LEVEL) + 1;
   const title = TITLES[Math.min(level - 1, TITLES.length - 1)];
   return { level, title, xpIntoLevel: xp % XP_PER_LEVEL, xpForNext: XP_PER_LEVEL };
+}
+
+export function computeGlobalXp(data: ProgressData): number {
+  return Object.values(data.subjects).reduce(
+    (sum, subject) => sum + Object.values(subject.nodes).reduce((s, n) => s + n.xpEarned, 0),
+    0,
+  );
 }

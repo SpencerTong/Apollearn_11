@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { computeNodeStates, computeSubjectXp, computeLevel } from '../treeState';
+import { computeNodeStates, computeSubjectXp, computeLevel, computeGlobalXp } from '../treeState';
 import type { LoadedTree } from '@/domain/content/types';
-import type { SubjectProgress } from '@/domain/progress/types';
+import type { SubjectProgress, ProgressData } from '@/domain/progress/types';
 
 const tree: LoadedTree = {
   subject: 'networking',
@@ -52,5 +52,23 @@ describe('computeLevel', () => {
     expect(r.level).toBe(2);
     expect(r.title).toBe('Apprentice');
     expect(r.xpIntoLevel).toBe(50);
+  });
+});
+
+describe('computeGlobalXp', () => {
+  it('sums xpEarned across all subjects', () => {
+    const data: ProgressData = {
+      subjects: {
+        networking: { nodes: { a: { status: 'mastered', bestScore: 1, xpEarned: 100 }, b: { status: 'mastered', bestScore: 1, xpEarned: 120 } } },
+        finance: { nodes: { x: { status: 'mastered', bestScore: 1, xpEarned: 80 } } },
+      },
+      streak: { count: 0, lastActiveISO: null },
+      seenIntro: true,
+    };
+    expect(computeGlobalXp(data)).toBe(300);
+  });
+
+  it('is 0 for empty progress', () => {
+    expect(computeGlobalXp({ subjects: {}, streak: { count: 0, lastActiveISO: null }, seenIntro: false })).toBe(0);
   });
 });
