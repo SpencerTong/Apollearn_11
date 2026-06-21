@@ -12,7 +12,11 @@ describe('loadSubjects', () => {
     expect(subjects[1].status).toBe('backlog');
   });
 
-  it('throws on an invalid status', () => {
+  it('throws when the registry file is missing', () => {
     expect(() => loadSubjects(path.join(__dirname, '..', '__fixtures__', 'does-not-exist'))).toThrow();
+  });
+
+  it('throws on a record with an invalid status', () => {
+    expect(() => loadSubjects(path.join(__dirname, '..', '__fixtures__', 'invalid'))).toThrow();
   });
 });
