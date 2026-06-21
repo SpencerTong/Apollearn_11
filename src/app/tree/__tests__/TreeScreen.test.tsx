@@ -25,6 +25,7 @@ describe('TreeScreen', () => {
     // answer + submit in the modal
     await userEvent.click(screen.getByRole('button', { name: /^x$/i }));
     await userEvent.click(screen.getByRole('button', { name: /submit/i }));
+    await userEvent.click(screen.getByRole('button', { name: /continue/i }));
     // XP reflected in the header (scoped to avoid matching the open detail panel)
     const header = screen.getByRole('banner');
     expect(await within(header).findByText(/100 XP/i)).toBeInTheDocument();

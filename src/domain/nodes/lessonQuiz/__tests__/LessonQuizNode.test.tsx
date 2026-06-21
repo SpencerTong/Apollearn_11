@@ -25,6 +25,23 @@ describe('LessonQuizNode', () => {
     expect(screen.getByText(/What is a packet/i)).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: /Data unit/i }));
     await userEvent.click(screen.getByRole('button', { name: /submit/i }));
+    await userEvent.click(screen.getByRole('button', { name: /continue/i }));
+    expect(onComplete).toHaveBeenCalledWith({ score: 1, passed: true, xp: 100 });
+  });
+
+  it('shows per-answer feedback and an XP float after submitting a pass, then continues', async () => {
+    const onComplete = vi.fn();
+    render(<LessonQuizNode node={node} onComplete={onComplete} />);
+    await userEvent.click(screen.getByRole('button', { name: /quiz me/i }));
+    await userEvent.click(screen.getByRole('button', { name: /Data unit/i }));
+    await userEvent.click(screen.getByRole('button', { name: /submit/i }));
+    // feedback shown, onComplete NOT called yet
+    expect(onComplete).not.toHaveBeenCalled();
+    expect(screen.getByTestId('xp-float')).toHaveTextContent('100');
+    // the correct choice is marked
+    expect(screen.getByRole('button', { name: /Data unit/i })).toHaveAttribute('data-correct', 'true');
+    // continue fires onComplete
+    await userEvent.click(screen.getByRole('button', { name: /continue/i }));
     expect(onComplete).toHaveBeenCalledWith({ score: 1, passed: true, xp: 100 });
   });
 
